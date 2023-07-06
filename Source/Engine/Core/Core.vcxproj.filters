@@ -16,6 +16,12 @@
     <ClCompile Include="Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Vector2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Random.h">
@@ -30,5 +36,7 @@
     <ClInclude Include="memory.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vector2.h" />
+    <ClInclude Include="core.h" />
   </ItemGroup>
 </Project>

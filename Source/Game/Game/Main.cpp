@@ -1,14 +1,77 @@
 #include <iostream>
-#include "Core/Random.h"
-#include "Core/FileIO.h"
-#include "Core/memory.h"
-#include "Core/Time.h"
-#include "Core/Random.h"
-#include "Core/FileIO.h"
+#include "Core/core.h"
 #include "Renderer/Renderer.h"
+#include <vector>
 
-int main() {
-    Jackster::g_MemoryTracker.displayInfo();
+
+class Star {
+public:
+    Star(const Jackster::Vector2& pos, const Jackster::Vector2& vel) :
+        m_pos{ pos },
+        m_vel{ vel }
+    {}
+
+    void Update(int width, int height) {
+        m_pos += m_vel;
+        if (m_pos.x >= width) m_pos.x = 0;
+        if (m_pos.y >= height) m_pos.y = 0;
+    }
+
+    void Draw(Jackster::Renderer& renderer) {
+        renderer.drawPoint(m_pos.x, m_pos.y);
+    }
+public:
+    Jackster::Vector2 m_pos;
+    Jackster::Vector2 m_vel;
+};
+
+int main(int argc, char* argv[]) {
+
+    Jackster::Renderer renderer;
+    renderer.Initialize();
+    renderer.CreateWindow("CSC196", 800, 600);
+
+    std::vector<Star> stars;
+    for (int i = 0; i < 1000; i++)
+    {
+        Jackster::Vector2 pos(Jackster::Vector2(Jackster::random(renderer.GetWidth()), Jackster::random(renderer.GetHeight())));
+        Jackster::Vector2 vel(Jackster::randomf(1, 4), 0.0f);
+
+        stars.push_back(Star(pos, vel));
+    }
+
+    while (true)
+    {
+        renderer.setColor(0, 0, 0, 0);
+        renderer.BeginFrame();
+        // draw
+        Jackster::Vector2 vel(1.0f, 0.3f);
+
+        for (auto& star : stars)
+        {
+            star.Update(renderer.GetWidth(), renderer.GetHeight());
+
+            //renderer.setColor(Jackster::random(1, 254), 0, 0, 255);
+            renderer.setColor(255, 255, 255, 255);
+            //renderer.drawPoint(star.m_pos.x, star.m_pos.y);
+            star.Draw(renderer);
+        }
+
+        renderer.EndFrame();
+
+        /*for (int i = 0; i < 1000; i++)
+        {
+
+            renderer.setColor(Jackster::random(1, 254), 0, 0, 255);
+            renderer.drawPoint(Jackster::random(renderer.GetWidth()), Jackster::random(renderer.GetHeight()));
+
+
+            renderer.EndFrame();
+        }*/
+    }
+    
+
+    /*Jackster::g_MemoryTracker.displayInfo();
     int* p = new int;
     Jackster::g_MemoryTracker.displayInfo();
     delete p;
@@ -16,7 +79,7 @@ int main() {
 
     Jackster::Time timer;
     for (int i = 0; i < 10000000; i++) {}
-    std::cout << timer.GetElapsedSeconds() << std::endl;
+    std::cout << timer.GetElapsedSeconds() << std::endl;*/
 
 
 
