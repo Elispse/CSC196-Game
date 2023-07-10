@@ -21,8 +21,8 @@ public:
         renderer.drawPoint(m_pos.x, m_pos.y);
     }
 public:
-    Jackster::Vector2 m_pos;
-    Jackster::Vector2 m_vel;
+    Jackster::vec2 m_pos;
+    Jackster::vec2 m_vel;
 };
 
 int main(int argc, char* argv[]) {
@@ -34,8 +34,8 @@ int main(int argc, char* argv[]) {
     std::vector<Star> stars;
     for (int i = 0; i < 1000; i++)
     {
-        Jackster::Vector2 pos(Jackster::Vector2(Jackster::random(renderer.GetWidth()), Jackster::random(renderer.GetHeight())));
-        Jackster::Vector2 vel(Jackster::randomf(1, 4), 0.0f);
+        Jackster::vec2 pos(Jackster::Vector2(Jackster::random(renderer.GetWidth()), Jackster::random(renderer.GetHeight())));
+        Jackster::vec2 vel(Jackster::randomf(1, 4), 0.0f);
 
         stars.push_back(Star(pos, vel));
     }
@@ -45,14 +45,14 @@ int main(int argc, char* argv[]) {
         renderer.setColor(0, 0, 0, 0);
         renderer.BeginFrame();
         // draw
-        Jackster::Vector2 vel(1.0f, 0.3f);
+        Jackster::vec2 vel(1.0f, 0.3f);
 
         for (auto& star : stars)
         {
             star.Update(renderer.GetWidth(), renderer.GetHeight());
 
             //renderer.setColor(Jackster::random(1, 254), 0, 0, 255);
-            renderer.setColor(255, 255, 255, 255);
+            renderer.setColor(Jackster::random(1, 255),Jackster::random(), 255, 255);
             //renderer.drawPoint(star.m_pos.x, star.m_pos.y);
             star.Draw(renderer);
         }
