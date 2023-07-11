@@ -1,12 +1,15 @@
 #include <iostream>
 #include "Core/core.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/Model.h"
 #include <vector>
+#include "Input/InputSystem.h"
+
 
 
 class Star {
 public:
-    Star(const Jackster::Vector2& pos, const Jackster::Vector2& vel) :
+    Star(const Jackster::vec2& pos, const Jackster::vec2& vel) :
         m_pos{ pos },
         m_vel{ vel }
     {}
@@ -31,6 +34,13 @@ int main(int argc, char* argv[]) {
     renderer.Initialize();
     renderer.CreateWindow("CSC196", 800, 600);
 
+    Jackster::InputSystem inputSystem;
+    inputSystem.Initialize();
+
+
+    std::vector < Jackster::vec2> points{ {-10, 0}, { 0, -10 }, { 10, 0 }, {-10, 0} };
+    Jackster::Model model{ points };
+
     std::vector<Star> stars;
     for (int i = 0; i < 1000; i++)
     {
@@ -40,8 +50,21 @@ int main(int argc, char* argv[]) {
         stars.push_back(Star(pos, vel));
     }
 
-    while (true)
+    // Main game loop
+    bool quit = false;
+    while (!quit)
     {
+        inputSystem.Update();
+        if (inputSystem.GetKeyDown(SDL_SCANCODE_ESCAPE)) 
+        {
+            quit = true;
+        }
+
+        if (inputSystem.GetMouseButtonDown(0) || inputSystem.GetMouseButtonDown(1) || inputSystem.GetMouseButtonDown(2)) {
+            std::cout << "Mouse Pressed ";
+            std::cout << inputSystem.GetMousePosition().x << " " << inputSystem.GetMousePosition().y << " " << std::endl;
+        }
+
         renderer.setColor(0, 0, 0, 0);
         renderer.BeginFrame();
         // draw
@@ -52,65 +75,14 @@ int main(int argc, char* argv[]) {
             star.Update(renderer.GetWidth(), renderer.GetHeight());
 
             //renderer.setColor(Jackster::random(1, 254), 0, 0, 255);
-            renderer.setColor(Jackster::random(1, 255),Jackster::random(), 255, 255);
+            renderer.setColor(Jackster::random(1, 255),Jackster::random(1, 255), 255, 255);
             //renderer.drawPoint(star.m_pos.x, star.m_pos.y);
             star.Draw(renderer);
         }
 
+        model.Draw(renderer, {400, 300}, 5.0f);
+
         renderer.EndFrame();
-
-        /*for (int i = 0; i < 1000; i++)
-        {
-
-            renderer.setColor(Jackster::random(1, 254), 0, 0, 255);
-            renderer.drawPoint(Jackster::random(renderer.GetWidth()), Jackster::random(renderer.GetHeight()));
-
-
-            renderer.EndFrame();
-        }*/
     }
-    
-
-    /*Jackster::g_MemoryTracker.displayInfo();
-    int* p = new int;
-    Jackster::g_MemoryTracker.displayInfo();
-    delete p;
-    Jackster::g_MemoryTracker.displayInfo();
-
-    Jackster::Time timer;
-    for (int i = 0; i < 10000000; i++) {}
-    std::cout << timer.GetElapsedSeconds() << std::endl;*/
-
-
-
-   /* auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < 10000000; i++) {}
-    auto end = std::chrono::high_resolution_clock::now();
-
-    std::cout << (end - start).count() << std::endl;
-
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();*/
-
-
-   /* std::cout << Jackster::getFilePath() << std::endl;
-    Jackster::setFilePath("Assets");
-    std::cout << Jackster::getFilePath() << std::endl;
-    size_t size;
-    Jackster::getFileSize("game.txt", size);
-    std::cout << size << std::endl;
-
-    std::string s;
-    Jackster::readFile("game.txt", s);
-    std::cout << s << std::endl;
-
-    Jackster::seedRandom((unsigned int)time(nullptr));
-    for (int i = 0; i < 10; i++) {
-        std::cout << Jackster::random(5, 10) << std::endl;
-
-        std::cout << Jackster::getFilePath() << std::endl;
-    }
-        Jackster::seedRandom((unsigned int)time(nullptr));
-        for (int i = 0; i < 10; i++) {
-            std::cout << Jackster::random(5, 10) << std::endl;
-        }*/
+    return 0;
 }

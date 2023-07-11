@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 
 namespace Jackster {
 	class Vector2
@@ -27,6 +28,13 @@ namespace Jackster {
 		Vector2& operator -= (const Vector2& v) { x -= v.x, y -= v.y; return *this; }
 		Vector2& operator /= (const Vector2& v) { x /= v.x, y /= v.y; return *this; }
 		Vector2& operator *= (const Vector2& v) { x *= v.x, y *= v.y; return *this; }
+
+
+		float lengthSqr() { return (x * x) + (y * y); }
+		float length() { return std::sqrt(lengthSqr()); }
+
+		Vector2 normalized() { return *this / length(); }
+		void normalize() { *this /= length(); }
 	};
 	using vec2 = Vector2;
 }
