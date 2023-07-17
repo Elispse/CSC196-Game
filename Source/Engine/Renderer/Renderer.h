@@ -11,7 +11,7 @@ namespace Jackster {
 		~Renderer() = default;
 
 		bool Initialize();
-		void Shutdown();
+		bool Shutdown();
 		
 	void CreateWindow(const std::string& title, int width, int height);
 	void BeginFrame();
@@ -33,4 +33,7 @@ namespace Jackster {
 		SDL_Renderer* m_renderer{ nullptr };
 		SDL_Window* m_window{ nullptr };
 	};
+
+	extern Renderer g_renderer;
+
 }

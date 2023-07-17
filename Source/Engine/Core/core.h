@@ -6,3 +6,5 @@
 #include "Random.h"
 #include "FileIO.h"
 #include "Vector2.h"
+#include "MathUtil.h"
+#include "Transform.h"

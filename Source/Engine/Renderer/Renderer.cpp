@@ -3,6 +3,8 @@
 
 namespace Jackster {
 
+	Renderer g_renderer;
+
 	bool Renderer::Initialize()
 	{
 		SDL_Init(SDL_INIT_VIDEO);
@@ -10,9 +12,10 @@ namespace Jackster {
 		return false;
 	}
 
-	void Renderer::Shutdown()
+	bool Renderer::Shutdown()
 	{
 
+		return false;
 	}
 
 	void Renderer::CreateWindow(const std::string& title, int width, int height)

@@ -151,7 +151,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="core.cpp" />
     <ClCompile Include="FileIO.cpp" />
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -159,9 +158,11 @@
   <ItemGroup>
     <ClInclude Include="core.h" />
     <ClInclude Include="FileIO.h" />
+    <ClInclude Include="MathUtil.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Time.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
