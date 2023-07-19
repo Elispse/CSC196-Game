@@ -1,36 +1,17 @@
-#include "memory.h"
+#include "Memory.h"
 #include <iostream>
 
-Jackster::MemoryTracker Jackster::g_MemoryTracker;
+namespace Jackster
+{
+	bool MemoryTracker::Initialize()
+	{
+		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-void* operator new (size_t size) {
-    void* p = malloc(size);
+		return true;
+	}
 
-    Jackster::g_MemoryTracker.Add(p, size);
-
-    return p;
-}
-
-void operator delete (void* address, size_t size) {
-    Jackster::g_MemoryTracker.Remove(address, size);
-    free(address);
-}
-
-namespace Jackster {
-
-
-    void MemoryTracker::Add(void* address, size_t size) {
-        m_bytesAllocated += size;
-        m_numAllocations++;
-    }
-
-    void MemoryTracker::Remove(void* address, size_t size) {
-        m_bytesAllocated -= size;
-        m_numAllocations--;
-    }
-
-    void MemoryTracker::displayInfo() {
-        std::cout << "current bytes allocated: " << m_bytesAllocated << std::endl;
-        std::cout << "current Num Allocated: " << m_numAllocations << std::endl;
-    }
+	void MemoryTracker::DisplayInfo()
+	{
+		_CrtMemDumpAllObjectsSince(NULL);
+	}
 }

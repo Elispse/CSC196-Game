@@ -1,9 +1,14 @@
 #include "Player.h"
-#include "Input//InputSystem.h"
+#include "Framework/Scene.h"
+#include "Input/InputSystem.h"
 #include "Renderer/Renderer.h"
+#include "Weapon.h"
 
 void Player::Update(float dt)
 {
+    Actor::Update(dt);
+
+    // movement
     float rotate = 0;
     if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_A)) rotate = -1;
     if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_D)) rotate = 1;
@@ -17,17 +22,13 @@ void Player::Update(float dt)
     m_transform.position.x = Jackster::Wrap(m_transform.position.x, (float)Jackster::g_renderer.GetWidth());
     m_transform.position.y = Jackster::Wrap(m_transform.position.y, (float)Jackster::g_renderer.GetHeight());
 
-    /*Jackster::vec2 direction;
-    if (inputSystem.GetKeyDown(SDL_SCANCODE_W)) direction.y = -1;
-    if (inputSystem.GetKeyDown(SDL_SCANCODE_S)) direction.y = 1;
-    if (inputSystem.GetKeyDown(SDL_SCANCODE_A)) direction.x = -1;
-    if (inputSystem.GetKeyDown(SDL_SCANCODE_D)) direction.x = 1;
-
-    position += direction * speed * Jackster::g_time.getDeltaTime();
-
-    if (inputSystem.GetMouseButtonDown(0) || inputSystem.GetMouseButtonDown(1) || inputSystem.GetMouseButtonDown(2)) {
-        std::cout << "mouse pressed" << std::endl;
-        Jackster::Vector2 vect = inputSystem.GetMousePosition();
-        std::cout << "X-Coord:" << vect.x << "Y-Coord:" << vect.y << std::endl;
-    }*/
+    // fire weapon
+    if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_SPACE) &&
+        !Jackster::g_inputSystem.GetPreviousKeyDown(SDL_SCANCODE_SPACE))
+    {
+        // Create Weapon
+        Jackster::Transform transform{ m_transform.position, m_transform.rotation};
+        std::unique_ptr<Weapon> weapon = std::make_unique<Weapon>(400.0f, transform, m_model);
+        m_scene->Add(std::move(weapon)); 
+    }
 }

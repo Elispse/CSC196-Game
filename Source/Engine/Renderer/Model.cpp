@@ -9,10 +9,15 @@ namespace Jackster {
 
 		std::istringstream stream(buffer);
 
+		//read color
+		stream >> m_color;
+
+		// Read number of points
 		std::string line;
 		std::getline(stream, line);
-
 		int numPoints = std::stoi(line);
+
+		// read vector2 points
 		for (int i = 0; i < numPoints; i++) {
 			vec2 point;
 			
@@ -28,6 +33,8 @@ namespace Jackster {
 	void Model::Draw(Renderer& renderer, const vec2 position,float rotation, float scale)
 	{
 		if (m_points.empty()) return;
+
+		renderer.setColor(Color::toInt(m_color.r), Color::toInt(m_color.g), Color::toInt(m_color.b), Color::toInt(m_color.a));
 
 		for (int i = 0; i < m_points.size() - 1; i++)
 		{

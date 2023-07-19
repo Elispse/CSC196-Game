@@ -17,7 +17,7 @@ namespace Jackster {
 	void BeginFrame();
 	void EndFrame();
 
-	void setColor(int R, int G, int B, int A);
+	void setColor(uint8_t R, uint8_t G, uint8_t B, uint8_t A);
 	void drawLine(int x1, int y1, int x2, int y2);
 	void drawLine(float x1, float y1, float x2, float y2);
 	void drawPoint(int x, int y);

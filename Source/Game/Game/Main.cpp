@@ -3,12 +3,14 @@
 #include "Renderer/Model.h"
 #include "Input/InputSystem.h"
 #include "Audio/AudioSystem.h"
-#include "Framework/Actor.h"
+#include "Framework/Scene.h"
 #include "Player.h"
 #include "Enemy.h"
+
 #include <thread>
 #include <vector>
 #include <iostream>
+#include <memory>
 
 class Star {
 public:
@@ -33,13 +35,11 @@ public:
 
 int main(int argc, char* argv[]) {
 
-
-    int m1 = Jackster::Max(4.0f, 3.0f);
-    int m2 = Jackster::Max(4, 3);
-
+    Jackster::MemoryTracker::Initialize();
     Jackster::seedRandom((unsigned) time(nullptr));
     Jackster::setFilePath("assets");
 
+    
     Jackster::g_renderer.Initialize();
     Jackster::g_renderer.CreateWindow("CSC196", 800, 600);
 
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < 1000; i++)
     {
         Jackster::vec2 pos(Jackster::Vector2(Jackster::random(Jackster::g_renderer.GetWidth()), Jackster::random(Jackster::g_renderer.GetHeight())));
-        Jackster::vec2 vel(Jackster::randomf(1, 4), 70.0f);
+        Jackster::vec2 vel(Jackster::randomf(1, 4), 0.0f);
 
         stars.push_back(Star(pos, vel));
     }
@@ -72,17 +72,17 @@ int main(int argc, char* argv[]) {
     float speed = 150;
     float scale = 5;
 
-    Player player{200, Jackster::pi, { {400, 300}, 0, 6}, model };
-    Enemy enemy{200, Jackster::pi, { {400, 300}, 0, 6}, model };
+    Jackster::Scene scene;
 
-    std::vector<Enemy> enemies;
-    for (int i = 0; i < 100; i++) 
+    std::unique_ptr<Player> player = std::make_unique<Player>(200.0f, Jackster::pi, Jackster::Transform{ {400, 300}, 0, 6 }, model);
+    scene.Add(std::move(player));
+    for (int i = 0; i < 1; i++) 
     {
-        Enemy enemy{ 300, Jackster::pi, { {400, 300}, Jackster::randomf(Jackster::pi2), 6}, model};  
-        enemies.push_back(enemy);
+        std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(150.0f, Jackster::pi, Jackster::Transform{ {400, 300}, Jackster::randomf(Jackster::pi2), 6 }, model);
+        scene.Add(std::move(enemy));
     }
 
-
+    
     // Main game loop
     bool quit = false;
     while (!quit)
@@ -90,35 +90,26 @@ int main(int argc, char* argv[]) {
         Jackster::g_time.tick();
         Jackster::g_inputSystem.Update();
         Jackster::g_audioSystem.Update();
-        if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_ESCAPE)) 
+
+        if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_ESCAPE))
         {
             quit = true;
         }
 
-        Jackster::vec2 direction;
-        if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_W)) direction.y = -1;
-        if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_S)) direction.y = 1;
-        if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_A)) direction.x = -1;
-        if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_D)) direction.x = 1;
-
-        position += direction * speed * Jackster::g_time.getDeltaTime();
-
-        if (Jackster::g_inputSystem.GetMouseButtonDown(0) || Jackster::g_inputSystem.GetMouseButtonDown(1) || Jackster::g_inputSystem.GetMouseButtonDown(2)) {
-            std::cout << "mouse pressed" << std::endl;
-            Jackster::Vector2 vect = Jackster::g_inputSystem.GetMousePosition();
-            std::cout << "X-Coord:" << vect.x << "Y-Coord:" << vect.y << std::endl;
-        }
-
-        if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_SPACE))
+        if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_SPACE) &&
+            !Jackster::g_inputSystem.GetPreviousKeyDown(SDL_SCANCODE_SPACE))
         {
             Jackster::g_audioSystem.PlayOneShot("shoot");
         }
 
-        player.Update(Jackster::g_time.getDeltaTime());
-        for (auto& enemy : enemies) enemy.Update(Jackster::g_time.getDeltaTime());
-        
+        //update Game
+        scene.Update(Jackster::g_time.getDeltaTime());
+
+        Jackster::vec2 direction;
+        position += direction * speed * Jackster::g_time.getDeltaTime();
+
+
         // draw
-        Jackster::vec2 vel(1.0f, 0.3f);
         Jackster::g_renderer.setColor(0, 0, 0, 0);
         Jackster::g_renderer.BeginFrame();
 
@@ -136,10 +127,14 @@ int main(int argc, char* argv[]) {
             Jackster::g_renderer.setColor(Jackster::random(256), Jackster::random(256), Jackster::random(256), 255);//draw
             Jackster::g_renderer.drawPoint(star.m_pos.x, star.m_pos.y);
         }
-        player.Draw(Jackster::g_renderer);
-        for (auto& enemy : enemies) enemy.Draw(Jackster::g_renderer);
-        
+
+        scene.Draw(Jackster::g_renderer);
+
         Jackster::g_renderer.EndFrame();
     }
+
+    stars.clear();
+    scene.RemoveAll();
+
     return 0;
 }
