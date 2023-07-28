@@ -12,8 +12,9 @@ namespace Jackster
 
     public:
         Transform() = default;
-        Transform(const vec2 postion, float rotation, float scale = 1) : position{ postion }, rotation{ rotation }, scale{ scale } {};
-
+        Transform(const vec2& position, float rotation, float scale = 1) :
+            position{ position },
+            rotation{ rotation },
+            scale{ scale } {}
     };
-
 };

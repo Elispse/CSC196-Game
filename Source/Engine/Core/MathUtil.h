@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <utility>
 
 namespace Jackster
 {
@@ -42,8 +43,12 @@ namespace Jackster
     inline T Clamp(T value, T min, T max) // 4 - 10 -> 3
     {
         if (min > max) std::swap(min, max);
-
         return (value < min) ? min : (value > max) ? max : value;
     }
 
+    template<typename T>
+    constexpr T Lerp(const T& a, const T& b, float t) // t = 0 <-> 1
+    {
+        return (a * (1.0f - t)) + (b * t);
+    }
 }

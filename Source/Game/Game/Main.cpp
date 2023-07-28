@@ -6,11 +6,19 @@
 #include "Framework/Scene.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Renderer/ModelManager.h"
+#include "Renderer/ParticleSystem.h"
+#include "ShipBlaster.h"
+#include "Framework/Game.h"
 
+
+#include <Renderer/Font.h>
 #include <thread>
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <Renderer/Text.h>
+#include <Framework/Emitter.h>
 
 class Star {
 public:
@@ -33,6 +41,9 @@ public:
     Jackster::vec2 m_vel;
 };
 
+
+
+
 int main(int argc, char* argv[]) {
 
     Jackster::MemoryTracker::Initialize();
@@ -44,18 +55,12 @@ int main(int argc, char* argv[]) {
     Jackster::g_renderer.CreateWindow("CSC196", 800, 600);
 
     Jackster::g_inputSystem.Initialize();
-    
     Jackster::g_audioSystem.Initialize();
-    Jackster::g_audioSystem.AddAudio("hit", "Hit_Hurt.wav");
-    Jackster::g_audioSystem.AddAudio("death", "Explosion.wav");
-    Jackster::g_audioSystem.AddAudio("shoot", "Laser_Shoot.wav");
 
-    Jackster::Model model;
-    model.Load("Ship.txt");
 
-    Jackster::vec2 v{5, 5};
-    v.normalize();
 
+    std::unique_ptr<ShipBlaster> game = std::make_unique<ShipBlaster>();
+    game->Initialize();
 
     std::vector<Star> stars;
     for (int i = 0; i < 1000; i++)
@@ -66,23 +71,10 @@ int main(int argc, char* argv[]) {
         stars.push_back(Star(pos, vel));
     }
 
-    Jackster::Transform transform{{400, 300}, 0, 3};
-    constexpr float turnRate = Jackster::degreesToRadians(180);
     Jackster::vec2 position{400, 300};
     float speed = 150;
     float scale = 5;
 
-    Jackster::Scene scene;
-
-    std::unique_ptr<Player> player = std::make_unique<Player>(200.0f, Jackster::pi, Jackster::Transform{ {400, 300}, 0, 6 }, model);
-    scene.Add(std::move(player));
-    for (int i = 0; i < 1; i++) 
-    {
-        std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(150.0f, Jackster::pi, Jackster::Transform{ {400, 300}, Jackster::randomf(Jackster::pi2), 6 }, model);
-        scene.Add(std::move(enemy));
-    }
-
-    
     // Main game loop
     bool quit = false;
     while (!quit)
@@ -90,29 +82,46 @@ int main(int argc, char* argv[]) {
         Jackster::g_time.tick();
         Jackster::g_inputSystem.Update();
         Jackster::g_audioSystem.Update();
+        Jackster::g_particleSystem.Update(Jackster::g_time.getDeltaTime());
+
+        
 
         if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_ESCAPE))
         {
             quit = true;
         }
 
-        if (Jackster::g_inputSystem.GetKeyDown(SDL_SCANCODE_SPACE) &&
-            !Jackster::g_inputSystem.GetPreviousKeyDown(SDL_SCANCODE_SPACE))
+        if (Jackster::g_inputSystem.GetMouseButtonDown(0))
         {
-            Jackster::g_audioSystem.PlayOneShot("shoot");
+            Jackster::EmitterData data;
+            data.burst = true;
+            data.burstCount = 100;
+            data.spawnRate = 200;
+            data.angle = 0;
+            data.angleRange = Jackster::pi;
+            data.lifetimeMin = 0.5f;
+            data.lifetimeMin = 1.5f;
+            data.speedMin = 50;
+            data.speedMax = 250;
+            data.damping = 0.5f;
+            data.color = Jackster::Color{ 1, 1, 1, 1 };
+            Jackster::Transform transform{ { Jackster::g_inputSystem.GetMousePosition() }, 0, 1 };
+            auto emitter = std::make_unique<Jackster::Emitter>(transform, data);
+            emitter->m_lifespan = 1.0f;
+            game->m_scene->Add(std::move(emitter));
         }
 
         //update Game
-        scene.Update(Jackster::g_time.getDeltaTime());
+        game->Update(Jackster::g_time.getDeltaTime());
 
         Jackster::vec2 direction;
         position += direction * speed * Jackster::g_time.getDeltaTime();
 
-
-        // draw
+        // Draw Game
         Jackster::g_renderer.setColor(0, 0, 0, 0);
         Jackster::g_renderer.BeginFrame();
 
+        //Update stars
         for (auto& star : stars)
         {
             star.Update(Jackster::g_renderer.GetWidth(), Jackster::g_renderer.GetHeight());
@@ -128,13 +137,33 @@ int main(int argc, char* argv[]) {
             Jackster::g_renderer.drawPoint(star.m_pos.x, star.m_pos.y);
         }
 
-        scene.Draw(Jackster::g_renderer);
+        if (Jackster::g_inputSystem.GetMouseButtonDown(0))
+        {
+            Jackster::EmitterData data;
+            data.burst = true;
+            data.burstCount = 100;
+            data.spawnRate = 200;
+            data.angle = 0;
+            data.angleRange = Jackster::pi;
+            data.lifetimeMin = 0.5f;
+            data.lifetimeMax = 1.5f;
+            data.speedMin = 50;
+            data.speedMax = 250;
+            data.damping = 0.5f;
+            data.color = Jackster::Color{ 1, 1, 1, 1 };
+            Jackster::Transform transform{ { Jackster::g_inputSystem.GetMousePosition() }, 0, 1 };
+            auto emitter = std::make_unique<Jackster::Emitter>(transform, data);
+            emitter->m_lifespan = 1.0f;
+            game->m_scene->Add(std::move(emitter));
+        }
 
+        //draws frame
+        game->Draw(Jackster::g_renderer);
+        Jackster::g_particleSystem.Draw(Jackster::g_renderer);
+        //ends frame
         Jackster::g_renderer.EndFrame();
     }
-
     stars.clear();
-    scene.RemoveAll();
 
     return 0;
 }

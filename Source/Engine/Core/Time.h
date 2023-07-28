@@ -24,12 +24,17 @@ namespace Jackster
 		clock_rep getElapsedMilliseconds();
 		float getElapsedSeconds();
 
-		float getTime() { return m_time; };
-		float getDeltaTime() { return m_deltaTime; };
+		float getTime() const { return m_time; };
+		float getDeltaTime() const { return m_deltaTime * m_timeScale; };
+		float getUnscaledDeltaTime() const { return m_deltaTime; }
+
+		float getTimeScale() const { return m_timeScale; }
+		void setTimeScale(float timeScale) { m_timeScale = m_timeScale; }
 
 	private:
 		float m_time;
 		float m_deltaTime;
+		float m_timeScale = 1;
 
 		clock::time_point m_startTime;
 		clock::time_point m_frameTime;

@@ -4,7 +4,7 @@
 class Enemy : public Jackster::Actor
 {
 public:
-	Enemy(float speed, float turnrate, const Jackster::Transform& transform, const Jackster::Model& model) :
+	Enemy(float speed, float turnrate, const Jackster::Transform& transform, std::shared_ptr<Jackster::Model> model) :
 		Actor{ transform, model },
 		m_speed{ speed },
 		m_turnRate{ m_turnRate }
@@ -14,6 +14,7 @@ public:
 	}
 
 	void Update(float dt) override;
+	virtual void onCollision(Actor* actor) override;
 
 private:
 	float m_speed = 0;
@@ -21,4 +22,5 @@ private:
 
 	float m_fireRate = 0;
 	float m_fireTimer = 0;
+	float m_health = 10.0f;
 };

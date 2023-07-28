@@ -19,6 +19,22 @@ namespace Jackster
 				iter++;
 			}
 		}
+		//check collisions
+		for (auto iter1 = m_actors.begin(); iter1 != m_actors.end(); iter1++)
+		{
+			for (auto iter2 = std::next(iter1, 1); iter2 != m_actors.end(); iter2++)
+			{
+				float distance = (*iter1)->m_transform.position.distance((*iter2)->m_transform.position);
+				float radius = (*iter1)->getRadius() + (*iter2)->getRadius();
+				if (distance <= radius)
+				{
+					(*iter1)->onCollision(iter2->get());
+					(*iter2)->onCollision(iter1->get());
+					//boom
+
+				}
+			}
+		}
 	}
 
 	void Scene::Draw(Renderer& renderer)
@@ -39,5 +55,5 @@ namespace Jackster
 	{
 		m_actors.clear();
 	}
-
+	
 }

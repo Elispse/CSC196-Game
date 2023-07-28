@@ -19,6 +19,12 @@
     <ClCompile Include="Weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShipBlaster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PowerUps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Player.h">
@@ -28,6 +34,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Weapon.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShipBlaster.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PowerUps.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

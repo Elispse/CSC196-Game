@@ -4,7 +4,7 @@
 class Weapon : public Jackster::Actor
 {
 public:
-	Weapon(float speed, const Jackster::Transform& transform, const Jackster::Model& model) :
+	Weapon(float speed, const Jackster::Transform& transform, std::shared_ptr<Jackster::Model> model) :
 		Actor{ transform, model },
 		m_speed{ speed }
 	{
@@ -12,7 +12,7 @@ public:
 	}
 
 	void Update(float dt) override;
-
+	virtual void onCollision(Actor* actor) override;
 private:
 	float m_speed = 0;
 };

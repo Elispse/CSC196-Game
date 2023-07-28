@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "SDL2-2.28.1/include/SDL_ttf.h"
 
 
 namespace Jackster {
@@ -8,12 +9,16 @@ namespace Jackster {
 	bool Renderer::Initialize()
 	{
 		SDL_Init(SDL_INIT_VIDEO);
+		TTF_Init();
 
 		return false;
 	}
 
 	bool Renderer::Shutdown()
 	{
+		SDL_DestroyRenderer(m_renderer);
+		SDL_DestroyWindow(m_window);
+		TTF_Quit();
 
 		return false;
 	}

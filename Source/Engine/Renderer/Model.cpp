@@ -48,4 +48,18 @@ namespace Jackster {
 	{
 		Draw(renderer, transform.position, transform.rotation, transform.scale);
 	}
+
+	float Model::getRadius()
+	{
+		if (m_radius) return m_radius;
+
+		for (auto point : m_points)
+		{
+			float length = point.length();
+			m_radius = Max(m_radius, length);
+
+		}
+
+		return m_radius;
+	}
 }
